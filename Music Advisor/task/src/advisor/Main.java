@@ -1,17 +1,33 @@
 package advisor;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
+    private static final List<String> validActions = Arrays.asList(
+            "new", "featured", "categories", "exit");
 
     public static void main(String[] args) {
-        determineAction();
+        executeAction(takeActionInput());
     }
 
-    private static void determineAction() {
+    private static String takeActionInput() {
+        boolean isValidAction;
         String action;
-        action = scanner.next();
+        do {
+            action = scanner.nextLine();
+            isValidAction = validActions.contains(action) || action.matches("playlists \\w+|playlists [^\\s]");
+            if (!isValidAction) {
+                System.out.println("Please input a valid action (new, featured, categories, playlists b, exit");
+            }
+        }
+        while (!isValidAction);
+        return action;
+    }
+
+    private static void executeAction(String action) {
 
         switch (action) {
             case "new" : {
