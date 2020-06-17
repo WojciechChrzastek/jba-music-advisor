@@ -1,5 +1,13 @@
 # Music advisor
 This is the project I am currently working on.
+___
+Repositories of other projects realised by me within JetBrains Academy Java Developer track:
+- [Simple banking system](https://github.com/WojciechChrzastek/jba-simple-banking-system)
+- [Flashcards](https://github.com/WojciechChrzastek/jba-flashcards)
+- [Coffee machine](https://github.com/WojciechChrzastek/jba-coffee-machine)
+- [Tic-Tac-Toe](https://github.com/WojciechChrzastek/jba-tic-tac-toe)
+- [Simple chatty bot](https://github.com/WojciechChrzastek/jba-simple-chatty-bot)
+___
 
 ## About the project
 
@@ -22,10 +30,3 @@ The aim is to create application serving as a personal music advisor that makes 
 - HTTP Basic Auth
 - Java Generics
 - design patterns
-___
-Repositories of other projects realised by me within JetBrains Academy Java Developer track:
-- [Simple banking system](https://github.com/WojciechChrzastek/jba-simple-banking-system)
-- [Flashcards](https://github.com/WojciechChrzastek/jba-flashcards)
-- [Coffee machine](https://github.com/WojciechChrzastek/jba-coffee-machine)
-- [Tic-Tac-Toe](https://github.com/WojciechChrzastek/jba-tic-tac-toe)
-- [Simple chatty bot](https://github.com/WojciechChrzastek/jba-simple-chatty-bot)
