@@ -84,9 +84,9 @@ public class Main {
         String playlistCategory = actionWithPlaylistCategory[1];
 
         System.out.println("---" + playlistCategory.toUpperCase() + " PLAYLISTS---\n" +
-                "Walk Like A Badass  \n" +
-                "Rage Beats  \n" +
-                "Arab Mood Booster  \n" +
+                "Walk Like A Badass\n" +
+                "Rage Beats\n" +
+                "Arab Mood Booster\n" +
                 "Sunday Stroll");
         executeAction();
     }
