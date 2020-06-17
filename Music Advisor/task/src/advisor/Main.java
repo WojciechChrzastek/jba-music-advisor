@@ -18,7 +18,7 @@ public class Main {
         String action;
         do {
             action = scanner.nextLine();
-            isValidAction = validActions.contains(action) || action.matches("playlists \\w+|playlists [^\\s]");
+            isValidAction = validActions.contains(action) || action.matches("playlists [^\\s].+");
             if (!isValidAction) {
                 System.out.println("Please input a valid action (new, featured, categories, playlists [category], exit");
             }
@@ -80,8 +80,7 @@ public class Main {
     }
 
     private static void printCategoryPlaylists(String action) {
-        String[] actionWithPlaylistCategory = action.split(" ");
-        String playlistCategory = actionWithPlaylistCategory[1];
+        String playlistCategory = action.substring(action.indexOf(" ") + 1);
 
         System.out.println("---" + playlistCategory.toUpperCase() + " PLAYLISTS---\n" +
                 "Walk Like A Badass\n" +
