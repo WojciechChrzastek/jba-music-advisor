@@ -76,7 +76,7 @@ public class Main {
                 redirectUri +
                 "&response_type=code";
         System.out.println(authLink
-        + "\n\n---SUCCESS---");
+                + "\n\n---SUCCESS---");
         isAuthorized = true;
         executeAction();
     }
