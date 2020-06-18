@@ -7,7 +7,8 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final List<String> validActions = Arrays.asList(
-            "new", "featured", "categories", "exit");
+            "auth", "new", "featured", "categories", "exit");
+    private static boolean isAuthorized;
 
     public static void main(String[] args) {
         executeAction();
@@ -20,7 +21,7 @@ public class Main {
             action = scanner.nextLine();
             isValidAction = validActions.contains(action) || action.matches("playlists [^\\s].+");
             if (!isValidAction) {
-                System.out.println("Please input a valid action (new, featured, categories, playlists [category], exit");
+                System.out.println("Please input a valid action (auth, new, featured, categories, playlists [category], exit");
             }
         }
         while (!isValidAction);
@@ -30,6 +31,10 @@ public class Main {
     private static void executeAction() {
         String action = takeActionInput();
         switch (action) {
+            case "auth" : {
+                printAuth();
+                break;
+            }
             case "new" : {
                 printNewReleases();
                 break;
@@ -50,6 +55,12 @@ public class Main {
                 exitApplication();
             }
         }
+    }
+
+    private static boolean printAuth() {
+        String authLink = "authLink";
+        System.out.println(authLink);
+        return isAuthorized = true;
     }
 
     private static void printNewReleases() {
