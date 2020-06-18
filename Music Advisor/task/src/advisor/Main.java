@@ -9,6 +9,8 @@ public class Main {
     private static final List<String> validActions = Arrays.asList(
             "auth", "new", "featured", "categories", "exit");
     private static boolean isAuthorized;
+    private static String clientId = "98138c41bf754e06a99bba3195392adb";
+    private static String redirectUri = "http://localhost:8080";
 
     public static void main(String[] args) {
         executeAction();
@@ -33,7 +35,7 @@ public class Main {
 
         switch (action) {
             case "auth": {
-                printAuth();
+                printAuth(clientId, redirectUri);
                 break;
             }
             case "new": {
@@ -67,8 +69,12 @@ public class Main {
         }
     }
 
-    private static void printAuth() {
-        String authLink = "authLink";
+    private static void printAuth(String clientId, String redirectUri) {
+        String authLink = "https://accounts.spotify.com/authorize?client_id=" +
+                clientId +
+                "&redirect_uri=" +
+                redirectUri +
+                "&response_type=code";
         System.out.println(authLink
         + "\n\n---SUCCESS---");
         isAuthorized = true;
