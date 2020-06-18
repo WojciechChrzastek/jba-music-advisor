@@ -69,7 +69,8 @@ public class Main {
 
     private static void printAuth() {
         String authLink = "authLink";
-        System.out.println(authLink);
+        System.out.println(authLink
+        + "\n\n---SUCCESS---");
         isAuthorized = true;
         executeAction();
     }
