@@ -13,7 +13,16 @@ public class Main {
     private static String redirectUri = "http://localhost:8080";
 
     public static void main(String[] args) {
+        redirectUri = determineRedirectUri(args);
         executeAction();
+    }
+
+    private static String determineRedirectUri(String[] args) {
+        if(args.length == 2 && args[0].equals("-access")) {
+            return args[1];
+        } else {
+            return redirectUri;
+        }
     }
 
     private static String takeActionInput() {
