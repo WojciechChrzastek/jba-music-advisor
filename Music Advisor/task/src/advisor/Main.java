@@ -9,7 +9,7 @@ public class Main {
     private static final List<String> validActions = Arrays.asList(
             "auth", "new", "featured", "categories", "exit");
     private static boolean isAuthorized;
-    private static String clientId = "98138c41bf754e06a99bba3195392adb";
+    private static final String clientId = "98138c41bf754e06a99bba3195392adb";
     private static String redirectUri = "http://localhost:8080";
 
     public static void main(String[] args) {
