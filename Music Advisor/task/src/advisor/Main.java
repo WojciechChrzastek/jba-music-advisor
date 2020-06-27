@@ -44,7 +44,7 @@ public class Main {
 
         switch (action) {
             case "auth": {
-                printAuth(clientId, redirectUri);
+                authUser(redirectUri);
                 break;
             }
             case "new": {
@@ -78,7 +78,7 @@ public class Main {
         }
     }
 
-    private static void printAuth(String clientId, String redirectUri) {
+    private static void printAuth(String redirectUri) {
         String authLink = "https://accounts.spotify.com/authorize?client_id=" +
                 clientId +
                 "&redirect_uri=" +
@@ -87,6 +87,11 @@ public class Main {
         System.out.println(authLink
                 + "\n\n---SUCCESS---");
         isAuthorized = true;
+    }
+
+    private static void authUser(String redirectUri) {
+        //server response
+        printAuth(redirectUri);
         executeAction();
     }
 
