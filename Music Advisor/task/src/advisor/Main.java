@@ -69,13 +69,10 @@ public class Main {
         }
     }
 
-    private static boolean verifyAuth() {
-        if (isAuthorized) {
-            return true;
-        } else {
-            System.out.println("Please, provide access for application.");
-            return false;
-        }
+    private static void authUser(String redirectUri) {
+        //server response
+        printAuth(redirectUri);
+        executeAction();
     }
 
     private static void printAuth(String redirectUri) {
@@ -89,10 +86,13 @@ public class Main {
         isAuthorized = true;
     }
 
-    private static void authUser(String redirectUri) {
-        //server response
-        printAuth(redirectUri);
-        executeAction();
+    private static boolean verifyAuth() {
+        if (isAuthorized) {
+            return true;
+        } else {
+            System.out.println("Please, provide access for application.");
+            return false;
+        }
     }
 
     private static void printNewReleases() {
