@@ -1,7 +1,7 @@
 package advisor;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -13,62 +13,107 @@ import java.net.http.HttpResponse;
 
 public class HttpServerHandler {
 
-  public static void serverHandler() {
+  public static void showAuthLink(String clientId, String redirectUri) {
+    System.out.println("use this link to request the access code:");
+    System.out.println("https://accounts.spotify.com/authorize?"
+            + "client_id=" + clientId
+            + "&redirect_uri=" + redirectUri
+            + "&response_type=" + "code");
+    System.out.println("waiting for code...");
+  }
+
+  public static String code = "";
+
+  public static void serverHandler(String redirectUri, String clientId) throws InterruptedException {
     HttpServer server = null;
     try {
       server = HttpServer.create();
     } catch (IOException e) {
       e.printStackTrace();
     }
-    try {
-      if (server != null) {
-        server.bind(new InetSocketAddress(8080), 0);
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
 
     if (server != null) {
+
+      try {
+        server.bind(new InetSocketAddress(8080), 0);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      server.start();
+
+      showAuthLink(clientId, redirectUri);
       server.createContext("/",
-              new HttpHandler() {
-                public void handle(HttpExchange exchange) throws IOException {
-                  String sampleMessage = "message";
-                  exchange.sendResponseHeaders(200, sampleMessage.length());
-                  exchange.getResponseBody().write(sampleMessage.getBytes());
-                  exchange.getResponseBody().close();
+              exchange -> {
+                String query = exchange.getRequestURI().getQuery();
+                String result;
+
+                if (query != null && query.contains("code")) {
+                  code = query.substring(5);
+                  result = "Got the code. Return back to your program.";
+                  System.out.println("code received");
+                } else {
+                  result = "Not found authorization code. Try again.";
                 }
+                exchange.sendResponseHeaders(200, result.length());
+                exchange.getResponseBody().write(result.getBytes());
+                exchange.getResponseBody().close();
+
+                System.out.println(result);
               }
       );
+
+      while (code.equals("")) {
+          Thread.sleep(10);
+      }
+      server.stop(1);
     }
+  }
 
+  public static String getAccessToken(String redirectUri, String clientId) {
 
-    if (server != null) {
-      server.start();
-    }
+    System.out.println("making http request for access_token...");
 
+//    String authUri = "https://accounts.spotify.com/authorize?" +
+//            "client_id=" + "98138c41bf754e06a99bba3195392adb"
+//            + "&client_secret=" + "3c843f1d5d5c4c49948064192cba9b3a"
+//            + "&grant_type=" + "authorization_code"
+//            + "&code=" + code
+//            + "&redirect_uri=" + redirectUri;
 
-    HttpClient client = HttpClient.newBuilder().build();
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080"))
-            .GET()
+    HttpRequest requestForAccessToken = HttpRequest.newBuilder()
+            .POST(HttpRequest.BodyPublishers.ofString(
+                    "client_id=" + "98138c41bf754e06a99bba3195392adb"
+                            + "&client_secret=" + "3c843f1d5d5c4c49948064192cba9b3a"
+                            + "&grant_type=" + "authorization_code"
+                            + "&code=" + code
+                            + "&redirect_uri=" + redirectUri))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .uri(URI.create("https://accounts.spotify.com/api/token"))
             .build();
 
-    HttpResponse<String> response = null;
+    HttpResponse<String> responseWithAccessToken = null;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      responseWithAccessToken = HttpClient
+              .newBuilder()
+              .build()
+              .send(requestForAccessToken,
+                      HttpResponse.BodyHandlers.ofString());
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     }
 
-    if (response != null) {
-      System.out.println(response.body());
+    String fullToken = null;
+    if (responseWithAccessToken != null) {
+      fullToken = responseWithAccessToken.body();
     }
 
+    return parseAccessToken(fullToken);
+  }
 
-    if (server != null) {
-      server.stop(1);
-    }
+  private static String parseAccessToken(final String bearerToken) {
+
+    JsonObject jo = JsonParser.parseString(bearerToken).getAsJsonObject();
+
+    return jo.get("access_token").getAsString();
   }
 }

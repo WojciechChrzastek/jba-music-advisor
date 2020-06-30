@@ -10,9 +10,11 @@ public class Main {
           "auth", "new", "featured", "categories", "exit");
   private static boolean isAuthorized;
   private static final String clientId = "98138c41bf754e06a99bba3195392adb";
-  private static String redirectUri = "http://localhost:8080";
+  private static String redirectUri;
+  private static String token;
 
-  public static void main(String[] args) {
+
+  public static void main(String[] args)  throws Exception {
     redirectUri = determineRedirectUri(args);
     executeAction();
   }
@@ -21,7 +23,7 @@ public class Main {
     if (args.length == 2 && args[0].equals("-access")) {
       return args[1];
     } else {
-      return redirectUri;
+      return "http://localhost:8080";
     }
   }
 
@@ -39,7 +41,7 @@ public class Main {
     return action;
   }
 
-  private static void executeAction() {
+  private static void executeAction() throws Exception {
     String action = takeActionInput();
 
     switch (action) {
@@ -69,22 +71,18 @@ public class Main {
     }
   }
 
-  private static void authUser(String redirectUri) {
+  private static void authUser(String redirectUri) throws Exception {
     //server response
     HttpServerHandler.serverHandler(redirectUri, clientId);
-
-    printAuth(redirectUri);
+    token = HttpServerHandler.getAccessToken(redirectUri, clientId);
+    System.out.println("response: ");
+    System.out.println(token);
+    printAuth();
     executeAction();
   }
 
-  private static void printAuth(String redirectUri) {
-    String authLink = "https://accounts.spotify.com/authorize?client_id=" +
-            clientId +
-            "&redirect_uri=" +
-            redirectUri +
-            "&response_type=code";
-    System.out.println(authLink
-            + "\n\n---SUCCESS---");
+  private static void printAuth() {
+    System.out.println("\n---SUCCESS---");
     isAuthorized = true;
   }
 
@@ -97,7 +95,7 @@ public class Main {
     }
   }
 
-  private static void printNewReleases() {
+  private static void printNewReleases() throws Exception {
     if (verifyAuth()) {
       System.out.println("---NEW RELEASES---\n" +
               "Mountains [Sia, Diplo, Labrinth]\n" +
@@ -108,7 +106,7 @@ public class Main {
     executeAction();
   }
 
-  private static void printFeaturedPlaylists() {
+  private static void printFeaturedPlaylists() throws Exception  {
     if (verifyAuth()) {
       System.out.println("---FEATURED---\n" +
               "Mellow Morning\n" +
@@ -119,7 +117,7 @@ public class Main {
     executeAction();
   }
 
-  private static void printAvailableCategories() {
+  private static void printAvailableCategories() throws Exception  {
     if (verifyAuth()) {
       System.out.println("---CATEGORIES---\n" +
               "Top Lists\n" +
@@ -130,7 +128,7 @@ public class Main {
     executeAction();
   }
 
-  private static void printCategoryPlaylists(String action) {
+  private static void printCategoryPlaylists(String action) throws Exception  {
     if (verifyAuth()) {
       String playlistCategory = action.substring(action.indexOf(" ") + 1);
 
