@@ -11,20 +11,24 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class HttpServerHandler {
+class HttpServerHandler {
+  private static final String SPOTIFY_API_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
+  private static final String CLIENT_ID = "98138c41bf754e06a99bba3195392adb";
+  private static final String CLIENT_SECRET = "3c843f1d5d5c4c49948064192cba9b3a";
+  private static final String GRANT_TYPE = "authorization_code";
+  private static String authCode = "";
 
-  public static void showAuthLink(String clientId, String redirectUri) {
+
+  private static void showAuthLink(String redirectUri) {
     System.out.println("use this link to request the access code:");
     System.out.println("https://accounts.spotify.com/authorize?"
-            + "client_id=" + clientId
+            + "client_id=" + CLIENT_ID
             + "&redirect_uri=" + redirectUri
             + "&response_type=" + "code");
-    System.out.println("waiting for code...");
+    System.out.println("\nwaiting for code...");
   }
 
-  public static String code = "";
-
-  public static void serverHandler(String redirectUri, String clientId) throws InterruptedException {
+  static void serverHandler(String redirectUri) throws InterruptedException {
     HttpServer server = null;
     try {
       server = HttpServer.create();
@@ -41,54 +45,48 @@ public class HttpServerHandler {
       }
       server.start();
 
-      showAuthLink(clientId, redirectUri);
+      showAuthLink(redirectUri);
+
       server.createContext("/",
               exchange -> {
                 String query = exchange.getRequestURI().getQuery();
                 String result;
 
                 if (query != null && query.contains("code")) {
-                  code = query.substring(5);
+                  authCode = query.substring(5);
                   result = "Got the code. Return back to your program.";
                   System.out.println("code received");
                 } else {
                   result = "Not found authorization code. Try again.";
+                  System.out.println("code not received");
                 }
                 exchange.sendResponseHeaders(200, result.length());
                 exchange.getResponseBody().write(result.getBytes());
                 exchange.getResponseBody().close();
-
-                System.out.println(result);
               }
       );
 
-      while (code.equals("")) {
-          Thread.sleep(10);
+      while (authCode.equals("")) {
+        Thread.sleep(10);
       }
       server.stop(1);
     }
   }
 
-  public static String getAccessToken(String redirectUri, String clientId) {
+  static String getAccessToken(String redirectUri) {
 
     System.out.println("making http request for access_token...");
 
-//    String authUri = "https://accounts.spotify.com/authorize?" +
-//            "client_id=" + "98138c41bf754e06a99bba3195392adb"
-//            + "&client_secret=" + "3c843f1d5d5c4c49948064192cba9b3a"
-//            + "&grant_type=" + "authorization_code"
-//            + "&code=" + code
-//            + "&redirect_uri=" + redirectUri;
+    String requestBody = "client_id=" + CLIENT_ID
+            + "&client_secret=" + CLIENT_SECRET
+            + "&grant_type=" + GRANT_TYPE
+            + "&code=" + authCode
+            + "&redirect_uri=" + redirectUri;
 
     HttpRequest requestForAccessToken = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(
-                    "client_id=" + "98138c41bf754e06a99bba3195392adb"
-                            + "&client_secret=" + "3c843f1d5d5c4c49948064192cba9b3a"
-                            + "&grant_type=" + "authorization_code"
-                            + "&code=" + code
-                            + "&redirect_uri=" + redirectUri))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .uri(URI.create("https://accounts.spotify.com/api/token"))
+            .uri(URI.create(SPOTIFY_API_TOKEN_ENDPOINT))
             .build();
 
     HttpResponse<String> responseWithAccessToken = null;
@@ -107,13 +105,12 @@ public class HttpServerHandler {
       fullToken = responseWithAccessToken.body();
     }
 
-    return parseAccessToken(fullToken);
+//    return parseAccessToken(fullToken);
+    return fullToken;
   }
 
   private static String parseAccessToken(final String bearerToken) {
-
     JsonObject jo = JsonParser.parseString(bearerToken).getAsJsonObject();
-
     return jo.get("access_token").getAsString();
   }
 }
