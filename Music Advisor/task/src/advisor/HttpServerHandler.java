@@ -95,16 +95,16 @@ class HttpServerHandler {
             .uri(URI.create(SPOTIFY_API_TOKEN_ENDPOINT))
             .build();
 
+    HttpClient client = HttpClient.newBuilder().build();
     HttpResponse<String> responseWithAccessToken = null;
     try {
-      responseWithAccessToken = HttpClient
-              .newBuilder()
-              .build()
+      responseWithAccessToken = client
               .send(requestForAccessToken,
-                      HttpResponse.BodyHandlers.ofString());
+              HttpResponse.BodyHandlers.ofString());
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     }
+
 
     String fullToken = null;
     if (responseWithAccessToken != null) {
