@@ -79,7 +79,7 @@ public class Main {
   }
 
   private static void confirmAuth(String accessToken) {
-    if (accessToken != null) {
+    if (!accessToken.contains("error")) {
       System.out.println("\n---SUCCESS---");
       isAuthorized = true;
     } else {
