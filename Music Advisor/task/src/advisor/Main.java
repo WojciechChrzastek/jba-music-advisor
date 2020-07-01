@@ -70,7 +70,7 @@ public class Main {
   }
 
   private static void authUser(String redirectUri) throws Exception {
-    HttpServerHandler.serverHandler(redirectUri);
+    HttpServerHandler.handleServer(redirectUri);
     String accessToken = HttpServerHandler.getAccessToken(redirectUri);
     System.out.println("response: ");
     System.out.println(accessToken);

@@ -28,7 +28,7 @@ class HttpServerHandler {
     System.out.println("\nwaiting for code...");
   }
 
-  static void serverHandler(String redirectUri) throws InterruptedException {
+  static void handleServer(String redirectUri) throws InterruptedException {
     HttpServer server = null;
     try {
       server = HttpServer.create();
