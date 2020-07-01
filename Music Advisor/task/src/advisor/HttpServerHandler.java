@@ -17,6 +17,7 @@ class HttpServerHandler {
   private static final String CLIENT_SECRET = "3c843f1d5d5c4c49948064192cba9b3a";
   private static final String GRANT_TYPE = "authorization_code";
   private static String authCode = "";
+  private static boolean hasCode = true;
 
 
   private static void showAuthLink(String redirectUri) {
@@ -59,6 +60,7 @@ class HttpServerHandler {
                 } else {
                   result = "Not found authorization code. Try again.";
                   System.out.println("code not received");
+                  hasCode = false;
                 }
                 exchange.sendResponseHeaders(200, result.length());
                 exchange.getResponseBody().write(result.getBytes());
@@ -67,6 +69,10 @@ class HttpServerHandler {
       );
 
       while (authCode.equals("")) {
+          if (!hasCode) {
+            server.stop(1);
+            return;
+        }
         Thread.sleep(10);
       }
       server.stop(1);
