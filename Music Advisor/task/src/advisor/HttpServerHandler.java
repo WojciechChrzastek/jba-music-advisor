@@ -17,8 +17,7 @@ class HttpServerHandler {
   private static final String CLIENT_SECRET = "3c843f1d5d5c4c49948064192cba9b3a";
   private static final String GRANT_TYPE = "authorization_code";
   private static String authCode = "";
-  private static boolean hasCode = true;
-
+  private static boolean hasResponse;
 
   private static void showAuthLink(String redirectUri) {
     System.out.println("use this link to request the access code:");
@@ -29,7 +28,7 @@ class HttpServerHandler {
     System.out.println("\nwaiting for code...");
   }
 
-  static void handleServer(String redirectUri) throws InterruptedException {
+  static void handleServer(String redirectUri) {
     HttpServer server = null;
     try {
       server = HttpServer.create();
@@ -38,20 +37,19 @@ class HttpServerHandler {
     }
 
     if (server != null) {
-
       try {
         server.bind(new InetSocketAddress(8080), 0);
       } catch (IOException e) {
         e.printStackTrace();
       }
       server.start();
-
       showAuthLink(redirectUri);
 
       server.createContext("/",
               exchange -> {
                 String query = exchange.getRequestURI().getQuery();
                 String result;
+                hasResponse = true;
 
                 if (query != null && query.contains("code")) {
                   authCode = query.substring(5);
@@ -60,7 +58,6 @@ class HttpServerHandler {
                 } else {
                   result = "Not found authorization code. Try again.";
                   System.out.println("code not received");
-                  hasCode = false;
                 }
                 exchange.sendResponseHeaders(200, result.length());
                 exchange.getResponseBody().write(result.getBytes());
@@ -68,12 +65,14 @@ class HttpServerHandler {
               }
       );
 
-      while (authCode.equals("")) {
-          if (!hasCode) {
-            server.stop(1);
-            return;
+      hasResponse = false;
+
+      while (!hasResponse) {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
-        Thread.sleep(10);
       }
       server.stop(1);
     }
@@ -100,7 +99,7 @@ class HttpServerHandler {
     try {
       responseWithAccessToken = client
               .send(requestForAccessToken,
-              HttpResponse.BodyHandlers.ofString());
+                      HttpResponse.BodyHandlers.ofString());
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     }
