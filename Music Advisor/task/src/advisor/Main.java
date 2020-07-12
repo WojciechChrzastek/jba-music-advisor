@@ -8,20 +8,20 @@ public class Main {
   private static final Scanner scanner = new Scanner(System.in);
   private static final List<String> validActions = Arrays.asList(
           "auth", "new", "featured", "categories", "exit");
-  private static final String LOCAL_REDIRECT_URI = "http://localhost:8080";
-  private static String redirectUri;
+  private static final String DEFAULT_SPOTIFY_ACCESS_SERVER_POINT = "https://accounts.spotify.com";
+  private static String spotifyAccessServerPoint;
   private static boolean isAuthorized;
 
   public static void main(String[] args) throws Exception {
-    redirectUri = determineRedirectUri(args);
+    spotifyAccessServerPoint = determineSpotifyServerAccessPoint(args);
     executeAction();
   }
 
-  private static String determineRedirectUri(String[] args) {
+  private static String determineSpotifyServerAccessPoint(String[] args) {
     if (args.length == 2 && args[0].equals("-access")) {
       return args[1];
     } else {
-      return LOCAL_REDIRECT_URI;
+      return DEFAULT_SPOTIFY_ACCESS_SERVER_POINT;
     }
   }
 
@@ -44,7 +44,7 @@ public class Main {
 
     switch (action) {
       case "auth": {
-        authUser(redirectUri);
+        authUser(spotifyAccessServerPoint);
         break;
       }
       case "new": {
@@ -69,9 +69,9 @@ public class Main {
     }
   }
 
-  private static void authUser(String redirectUri) throws Exception {
-    HttpServerHandler.handleServer(redirectUri);
-    String accessToken = HttpServerHandler.getAccessToken(redirectUri);
+  private static void authUser(String spotifyAccessServerPoint) throws Exception {
+    String authCode = HttpServerHandler.handleServer(spotifyAccessServerPoint);
+    String accessToken = HttpServerHandler.getAccessToken(authCode, spotifyAccessServerPoint);
     System.out.println("response: ");
     System.out.println(accessToken);
     confirmAuth(accessToken);
@@ -83,7 +83,7 @@ public class Main {
       System.out.println("\n---SUCCESS---");
       isAuthorized = true;
     } else {
-      System.out.println("\n---AUTHORIZATION-ERROR---");
+      System.out.println("\n---ERROR---");
     }
   }
 
