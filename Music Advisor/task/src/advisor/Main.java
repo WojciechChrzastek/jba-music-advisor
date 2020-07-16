@@ -12,9 +12,13 @@ public class Main {
   private static String spotifyAccessServerPoint;
   private static boolean isAuthorized;
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     spotifyAccessServerPoint = determineSpotifyServerAccessPoint(args);
-    executeAction();
+    try {
+      executeAction();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   private static String determineSpotifyServerAccessPoint(String[] args) {
